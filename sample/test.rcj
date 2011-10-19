@@ -1,0 +1,28 @@
+#!/usr/bin/env ruby 
+
+require 'rubygems'
+require 'RubyCron'
+include RubyCron
+
+rcj = RubyCronJob.new do |script|
+  script.author     = 'John Doe'
+  script.name       = 'test'
+  script.mailto     = 'john@doe.com'
+  script.mailfrom   = 'root@doe.com'
+  script.mailon     = :all
+  script.exiton     = :none
+  script.verbose    = false
+end
+
+rcj.execute do 
+  unless File.directory?('/tmp')
+    warning "Something awry is going on with /tmp."
+  end
+  begin
+  File.open('/tmp/rubycrontest', 'w') do |f|
+    f.write("Test completed successfully.")
+  end
+  rescue => e
+    error "Something went wrong trying to write to file: #{e.message}"
+  end
+end

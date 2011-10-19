@@ -1,0 +1,25 @@
+This is your RubyCron mailer reporting on <%= self.name %>.
+
+There were <%= @warnings.size %> warnings and <%= @errors.size %> errors during the last run, which started at 
+<%= @starttime %> and ended at <%= @endtime %>.
+<% unless @warnings.empty? %>
+<%= "These were the warnings:" %>
+<% @warnings.each_with_index do |warning, index| %> 
+<%=	index + 1 %>: <%= warning %>
+<%=	"============================================================" %>
+<% end %> <% end %>
+<% unless @errors.empty? %>
+<%= "These were the errors:" %>
+<% @errors.each_with_index do |error, index| %> 
+<%=	index + 1 %>: <%= error %>
+<%=	"============================================================" %>
+<% end %> <% end %>
+<% if @warnings.empty? && @errors.empty? %>
+<%= "There were no problems to report. Have a nice day!" %>
+<% else %>
+<%= "Please look into these matters asap." %>
+<% end %>
+
+
+
+## Powered by RubyCron.
