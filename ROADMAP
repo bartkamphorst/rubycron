@@ -1,0 +1,25 @@
+In no particular order.
+
+* Add specs to project for TDD.
+
+* Implement optional smtp_settings directive to pass to the mail gem. So people can do the following:
+
+smtp_settings = { 	:address              => "smtp.gmail.com",
+            		:port                 => 587,
+            		:domain               => 'your.host.name',
+		            :user_name            => '<username>',
+		            :password             => '<password>',
+		            :authentication       => 'plain',
+		            :enable_starttls_auto => true  }
+            
+rcj = RubyCronJob.new do |script|
+	script.author     		= 'John Doe'
+ 	script.name       		= 'test'
+ 	script.mailto     		= 'john@doe.com'
+ 	script.mailfrom   		= 'root@doe.com'
+	script.smtp_settings 	= smtp_settings
+end
+
+* Implement optional :template directive for using a custom ERB template:
+
+script.template 	= "./myTemplate"
