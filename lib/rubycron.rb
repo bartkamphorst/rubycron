@@ -10,19 +10,26 @@ module RubyCron
   require 'mail'
   require 'erb'
   
-  attr_accessor :name, :author, :mailto, :mailfrom, :mailsubject, :mailon, :exiton, :logfile, :verbose
+  attr_accessor :name, :author, :mailto, :mailfrom, :mailsubject, :mailon, :exiton, :smtp_settings, :logfile, :verbose
+  attr_reader   :warnings, :errors
   
     def initialize(&block)
       @warnings, @errors = [], []
 
       instance_eval(&block)
-      terminate("Cannot connect to local smtp server.") unless smtp_connection?
+      if smtp_settings
+        terminate("SMTP settings have to be passed in as a hash.") unless smtp_settings.instance_of?(Hash)
+        terminate("SMTP settings should include at least an address (:address).") unless smtp_settings.keys.include?(:address)
+        terminate("SMTP settings should include at least a port number (:port).") unless smtp_settings.keys.include?(:port)
+      else
+        terminate("Cannot connect to local smtp server.") unless smtp_connection?
+      end
       terminate("This job has no name.") unless self.name 
       terminate("This job has no author.") unless self.author
       terminate("No To: header was set. ") unless self.mailto
       
-      self.mailfrom ||= 'root@localhost' 
-      self.verbose  ||= false 
+      self.mailfrom       ||= 'root@localhost' 
+      self.verbose        ||= false 
       self.mailon = :all unless self.mailon && [:none, :warning, :error, :all].include?(self.mailon)
       self.exiton = :all unless self.exiton && [:none, :warning, :error, :all].include?(self.exiton)
 
@@ -91,6 +98,12 @@ module RubyCron
       mailsubject = self.mailsubject
       mailbody = ERB.new(File.read(File.join(File.dirname(__FILE__), '/report.erb'))).result(binding)
     
+      if smtp_settings 
+        Mail.defaults do
+          delivery_method :smtp, smtp_settings
+        end
+      end
+      
       mail = Mail.new do
         from    mailfrom
         to      mailto
