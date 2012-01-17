@@ -10,7 +10,7 @@ module RubyCron
   require 'mail'
   require 'erb'
   
-  attr_accessor :name, :author, :mailto, :mailfrom, :mailsubject, :mailon, :exiton, :smtp_settings, :logfile, :verbose
+  attr_accessor :name, :author, :mailto, :mailfrom, :mailsubject, :mailon, :exiton, :template, :smtp_settings, :logfile, :verbose
   attr_reader   :warnings, :errors
   
     def initialize(&block)
@@ -30,6 +30,7 @@ module RubyCron
       
       self.mailfrom       ||= 'root@localhost' 
       self.verbose        ||= false 
+      self.template       ||= File.join(File.dirname(__FILE__), '/report.erb')
       self.mailon = :all unless self.mailon && [:none, :warning, :error, :all].include?(self.mailon)
       self.exiton = :all unless self.exiton && [:none, :warning, :error, :all].include?(self.exiton)
 
@@ -96,7 +97,7 @@ module RubyCron
       mailfrom = self.mailfrom
       mailto = self.mailto
       mailsubject = self.mailsubject
-      mailbody = ERB.new(File.read(File.join(File.dirname(__FILE__), '/report.erb'))).result(binding)
+      mailbody = ERB.new(File.read(self.template)).result(binding)
     
       if smtp_settings 
         Mail.defaults do
