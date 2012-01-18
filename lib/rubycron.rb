@@ -1,4 +1,4 @@
-# Copyright (c) Bart Kamphorst <rubycron@kamphorst.com>, 2011
+# Copyright (c) Bart Kamphorst <rubycron@kamphorst.com>, 2011 - 2012.
 # Licensed under the modified BSD License. All rights reserved.
 
 module RubyCron
@@ -6,44 +6,88 @@ module RubyCron
   class RubyCronJob
   
   require 'net/smtp'
+  require 'yaml'
+  require 'open-uri'
   require 'rubygems'
   require 'mail'
   require 'erb'
   
-  attr_accessor :name, :author, :mailto, :mailfrom, :mailsubject, :mailon, :exiton, :template, :smtp_settings, :logfile, :verbose
+  attr_accessor :name, :author, :mailto, :mailfrom, :mailsubject, :mailon, :exiton, :template, :smtpsettings, :logfile, :verbose
   attr_reader   :warnings, :errors
   
-    def initialize(&block)
+    def initialize(args = nil)
       @warnings, @errors = [], []
-
-      instance_eval(&block)
-      if smtp_settings
-        terminate("SMTP settings have to be passed in as a hash.") unless smtp_settings.instance_of?(Hash)
-        terminate("SMTP settings should include at least an address (:address).") unless smtp_settings.keys.include?(:address)
-        terminate("SMTP settings should include at least a port number (:port).") unless smtp_settings.keys.include?(:port)
-      else
-        terminate("Cannot connect to local smtp server.") unless smtp_connection?
-      end
-      terminate("This job has no name.") unless self.name 
-      terminate("This job has no author.") unless self.author
-      terminate("No To: header was set. ") unless self.mailto
       
-      self.mailfrom       ||= 'root@localhost' 
-      self.verbose        ||= false 
-      self.template       ||= File.join(File.dirname(__FILE__), '/report.erb')
-      self.mailon = :all unless self.mailon && [:none, :warning, :error, :all].include?(self.mailon)
-      self.exiton = :all unless self.exiton && [:none, :warning, :error, :all].include?(self.exiton)
-
-      if self.logfile
-        $stdout.reopen(self.logfile, "a")
-        $stdout.sync = true
-        $stderr.reopen($stdout)
+      case args
+        when NilClass then yield self if block_given?
+        when Proc     then instance_eval(args)
+        when Hash     then 
+          
+          args = load_config(:file, args[:configfile]).merge(args) if args[:configfile]
+          args = load_config(:url, args[:configurl]).merge(args)   if args[:configurl] 
+          
+          args.each do |key, value|
+            instance_variable_set("@#{key}", value) if value
+          end
+        else terminate "Expected a hash or a block to initialize, but instead received a #{args.class} object."
       end
+            
+      check_sanity
+      
       rescue => e
-        $stdout = STDOUT
         terminate(e.message)
     end
     
+    def load_config(source_type, source)
+      if source_type == :file
+        io = File.open(source) if File.file?(source)
+      elsif source_type == :url
+        io = open(source)
+      end
+      yml = YAML::load(io)
+      return yml if yml.is_a?(Hash)
+      return {}
+    end
+    
+    def check_sanity
+      
+      raise "This job has no name."   unless @name 
+      raise "This job has no author." unless @author
+      raise "No To: header was set. " unless @mailto
+      
+      check_smtp_settings
+      set_defaults
+      enable_file_logging if @logfile  
+  
+    end
+    
+    def check_smtp_settings     
+      if @smtpsettings
+        raise "SMTP settings have to be passed in as a hash." unless @smtpsettings.instance_of?(Hash)
+        raise "SMTP settings should include at least an address (:address)." unless @smtpsettings.keys.include?(:address)
+        raise "SMTP settings should include at least a port number (:port)." unless @smtpsettings.keys.include?(:port)
+      else
+        raise "Cannot connect to local smtp server." unless smtp_connection?
+      end
+    end
+    
+    def set_defaults
+      @mailfrom       ||= 'root@localhost' 
+      @verbose        ||= false 
+      @template       ||= File.join(File.dirname(__FILE__), '/report.erb')
+      @mailon = :all unless self.mailon && [:none, :warning, :error, :all].include?(self.mailon)
+      @exiton = :all unless self.exiton && [:none, :warning, :error, :all].include?(self.exiton)
+    end
+    
+    def enable_file_logging
+      $stdout.reopen(@logfile, "a")
+      $stdout.sync = true
+      $stderr.reopen($stdout)
+      rescue => e
+        $stdout = STDOUT
+        raise e
+    end
+        
     def terminate(message)
       $stderr.puts "## Cannot complete job. Reason: #{message}"
       exit 1
@@ -93,15 +137,15 @@ module RubyCron
     # an erb template file, and mikel's excellent mail gem. 
     private
     def report
-      self.mailsubject = "Cron report for #{name}: #{@warnings.size} warnings & #{@errors.size} errors" unless self.mailsubject
-      mailfrom = self.mailfrom
-      mailto = self.mailto
-      mailsubject = self.mailsubject
-      mailbody = ERB.new(File.read(self.template)).result(binding)
+      @mailsubject  = "Cron report for #{name}: #{@warnings.size} warnings & #{@errors.size} errors" unless @mailsubject
+      mailfrom      = @mailfrom
+      mailto        = @mailto
+      mailsubject   = @mailsubject
+      mailbody      = ERB.new(File.read(@template)).result(binding)
     
-      if smtp_settings 
+      if @smtpsettings 
         Mail.defaults do
-          delivery_method :smtp, smtp_settings
+          delivery_method :smtp, @smtpsettings
         end
       end
       

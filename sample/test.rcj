@@ -4,15 +4,14 @@ require 'rubygems'
 require 'RubyCron'
 include RubyCron
 
-rcj = RubyCronJob.new do |script|
-  script.author     = 'John Doe'
-  script.name       = 'test'
-  script.mailto     = 'john@doe.com'
-  script.mailfrom   = 'root@doe.com'
-  script.mailon     = :all
-  script.exiton     = :none
-  script.verbose    = false
-end
+rcj = RubyCronJob.new(
+  :author     => 'John Doe',
+  :name       => 'test',
+  :mailto     => 'john@doe.com',
+  :mailfrom   => 'root@doe.com',
+  :mailon     => :all,
+  :exiton     => :none,
+  :verbose    => false )
 
 rcj.execute do 
   unless File.directory?('/tmp')

@@ -15,7 +15,7 @@ By letting RubyCron deal with warnings, errors, and sending reports, you can foc
 
 This gem depends on [Mikel's wonderful mail gem](https://github.com/mikel/mail).
 
-In order to send mail, it assumes you have a local smtp server running on port 25.
+By default, RubyCron assumes you have a local smtp server running on port 25 in order to send mail.
 
 ## Usage
 
@@ -23,11 +23,9 @@ In order to send mail, it assumes you have a local smtp server running on port 2
 
 Open a new file, require and include RubyCron, and then initialize a new RubyCronJob as follows:
 
-	rcj = RubyCronJob.new do |script|
-  		script.author     = 'John Doe'
-  		script.name       = 'test'
-		script.mailto     = 'john@doe.com'
-	end
+	rcj = RubyCronJob.new( 	:author => 'John Doe',
+  							:name   => 'test',
+							:mailto => 'john@doe.com' )
 
 ### Write your cronjob
 
@@ -72,9 +70,9 @@ Simply feed your rubycronjob to rcjrunner.rb as a command-line argument in your 
 
 ### I now get all these reports, but I really only care if the job fails! 
 
-Sorting through hundreds of cron mails per day that report successful runs may be gratifying at times, but most sane people only care to be notified when their cronjobs fail. Not to worry, just add to following line to the RubyCronJob's initialization. 
+Sorting through hundreds of cron mails per day that report successful runs may be gratifying at times, but most sane people only care to be notified when their cronjobs fail. Not to worry, just add the following line to the RubyCronJob's initialization hash. 
 
-	script.mailon	= :error
+	:mailon	=> :error
 
 RubyCron will now only report when errors occurred during the run. Other options are :none, :warning and :all (default).
 
@@ -82,35 +80,84 @@ RubyCron will now only report when errors occurred during the run. Other options
 
 Of course. Use 
 
-	script.mailfrom   = 'root@doe.com'
+	:mailfrom => 'root@doe.com'
 
 to change the From:-header.
+
+### Do I really have to configure a local smtp server to send mail?
+
+No. You can use other smtp servers for delivery like so:
+
+	smtpsettings = { 	:address              => 'smtp.gmail.com',
+            			:port                 => 587,
+            			:domain               => 'your.host.name',
+		            	:user_name            => '<username>',
+		            	:password             => '<password>',
+		            	:authentication       => 'plain',
+		            	:enable_starttls_auto => true  }
+            
+	rcj = RubyCronJob.new(  :author     	=> 'John Doe',
+					 		:name       	=> 'test',
+						 	:mailto     	=> 'john@doe.com',
+						 	:mailfrom   	=> 'root@doe.com',
+							:smtpsettings 	=> smtpsettings )
 
 ### I want my cronjob to stop running when there are errors.
 
 No problem. You can configure this behavior with
 
-	script.exiton	= :all
+	:exiton	=> :all
 
 Valid values are :none, :warning, :error, :all.
+
+### Is there a way to manipulate the content of the email reports?
+
+There sure is. Simply write your own ERB template, and tell the RubyCronJob about it with the :template directive.
+
+	rcj = RubyCronJob.new(
+		:author     	=> 'John Doe',
+	 	:name       	=> 'test',
+	 	:mailto     	=> 'john@doe.com',
+	 	:mailfrom   	=> 'root@doe.com',
+		:template 		=> 'my_template.erb' )
+
+Note that from inside the ERB template (my_template.erb in the above example) you have access to the @warnings and @errors arrays.
 
 ### May I please see some output while I'm developing my cronjob?
 
 Output to stdout and stderr can be very useful when debugging your cronjob. Just set the verbose flag to true:
 
-	script.verbose	= true
+	:verbose => true
 
 ### As a sysadmin, I like grepping through files. Can I have a log file please?
 
 Yes. Set a file path in RubyCronJob's logfile variable, and all output will be redirected to file:
 
-	script.logfile	= '/tmp/rcjlogfile'
+	:logfile => '/tmp/rcjlogfile'
 
 Note that you will still receive email reports when you enable file logging. 
 
+### I like all these different options, but can't I set some of them globally for all my cronjobs?
+
+Anything to prevent redundancy, right? Use the :configfile and :configurl directives to point towards YAML files that hold your configuration hashes. For instance, this works:
+
+	rcj = RubyCronJob.new( :configfile => "my_config_file.yml" )
+
+Or this:
+
+	rcj = RubyCronJob.new( :configurl => "http://www.foo.bar/my_config.yml")
+
+Or even a combination:
+
+	rcj = RubyCronJob.new(  :configfile => "my_config_file.yml",
+							:configurl 	=> "http://www.foo.bar/my_config.yml",
+							:author    	=> 'John Doe' )
+	
+Note that in the latter case the values of the directives specified within the RubyCronJob itself will take precedence over the file or url directives.
+
 ## License
 
-Copyright (c) 2011, Bart Kamphorst
+Copyright (c) 2011 - 2012, Bart Kamphorst
 
 (Modified BSD License)
 

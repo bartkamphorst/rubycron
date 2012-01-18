@@ -4,7 +4,7 @@ describe "cron report" do
   
   before(:each) do
     
-    smtp_settings = { 	
+    smtpsettings = { 	
       :address              => "smtp.gmail.com",
       :port                 => 587,
       :domain               => 'your.host.name',
@@ -14,20 +14,28 @@ describe "cron report" do
     	:enable_starttls_auto => true  
     }
     
-    @rcj = RubyCron::RubyCronJob.new do |script|
-      script.author         = 'John Doe'
-      script.name           = 'test'
-      script.mailto         = 'john@doe.com'
-      script.mailon         = :all
-      script.exiton         = :none
-      script.verbose        = false
-      script.smtp_settings  = smtp_settings
-    end
+    @rcj = RubyCron::RubyCronJob.new(
+      :author         => 'John Doe',
+      :name           => 'test',
+      :mailto         => 'john@doe.com',
+      :mailon         => :all,
+      :exiton         => :none,
+      :verbose        => false,
+      :smtpsettings   => smtpsettings )
   end
   
   it "should load a ERB template" do
     @rcj.template.should be
     File.basename(@rcj.template).should == "report.erb"
+    @rcj.template = "my_template.erb"
+    File.basename(@rcj.template).should == "my_template.erb"
+  end
+  
+  it "should have proper smtp settings" do
+    @rcj.smtpsettings[:address].should   == "smtp.gmail.com"
+    @rcj.smtpsettings[:port].should      == 587
+    @rcj.smtpsettings[:user_name].should == "<username>"
+    @rcj.smtpsettings[:password].should  == "<password>"
   end
   
   after(:each) do

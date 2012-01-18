@@ -1,0 +1,60 @@
+#########################
+# What's new in v. 0.2? #
+#########################
+
+* Modified initialize method to accept a hash. To initialize, do:
+
+rcj = RubyCronJob.new(
+	:author     		=> 'John Doe',
+ 	:name       		=> 'test',
+ 	:mailto     		=> 'john@doe.com',
+ 	:mailfrom   		=> 'root@doe.com' )
+
+This is now the preferred way of initialization. Initialization with a block is deprecated, but
+still works for backward compatibility. 
+
+* Configuration hashes can be stored as yaml files for convenience. For instance, this works:
+
+rcj = RubyCronJob.new( :configfile => "my_config_file.yml" )
+
+Or this:
+
+rcj = RubyCronJob.new( :configurl => "http://www.foo.bar/my_config.yml")
+
+Or even a combination:
+
+rcj = RubyCronJob.new(  :configfile => "my_config_file.yml",
+						:configurl 	=> "http://www.foo.bar/my_config.yml",
+						:author    	=> 'John Doe' )
+	
+Note that the values of the directives specified within the RubyCronJob itself will take precedence over 
+the file or url directives.
+
+* Added a smtpsettings directive to pass smtp options to the mail gem. You can now do the following:
+
+smtpsettings = { 	:address              => "smtp.gmail.com",
+            		:port                 => 587,
+            		:domain               => 'your.host.name',
+		            :user_name            => '<username>',
+		            :password             => '<password>',
+		            :authentication       => 'plain',
+		            :enable_starttls_auto => true  }
+            
+rcj = RubyCronJob.new(
+	:author     	=> 'John Doe',
+ 	:name       	=> 'test',
+ 	:mailto     	=> 'john@doe.com',
+ 	:mailfrom   	=> 'root@doe.com',
+	:smtpsettings 	=> smtpsettings )
+
+
+* Added a template directive for using a custom ERB template:
+
+rcj = RubyCronJob.new(
+	:author     	=> 'John Doe',
+ 	:name       	=> 'test',
+ 	:mailto     	=> 'john@doe.com',
+ 	:mailfrom   	=> 'root@doe.com',
+	:template 		=> 'my_template.erb' )
+
+From inside the ERB template (my_template.erb in the above example) you have access to the @warnings and @errors arrays.
