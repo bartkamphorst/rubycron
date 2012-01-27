@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby 
 
 require 'rubygems'
-require 'RubyCron'
+require 'rubycron'
 include RubyCron
 
 rcj = RubyCronJob.new(
