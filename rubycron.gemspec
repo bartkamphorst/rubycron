@@ -4,7 +4,7 @@ Gem::Specification.new do |s|
   s.name              = "rubycron"
   s.summary           = "Simplifies your Ruby cronjobs by automating the reporting process."
   s.description       = "Write clean cronjobs in Ruby, and get reporting for free!"
-  s.version           = "0.2b"
+  s.version           = "0.2"
   s.author            = "Bart Kamphorst"
   s.email             = "rubycron@kamphorst.com"
   s.homepage          = "https://github.com/bartkamphorst/rubycron"
