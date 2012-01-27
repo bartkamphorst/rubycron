@@ -143,9 +143,10 @@ module RubyCron
       mailsubject   = @mailsubject
       mailbody      = ERB.new(File.read(@template)).result(binding)
     
-      if @smtpsettings 
+      if @smtpsettings
+        smtpsettings = @smtpsettings 
         Mail.defaults do
-          delivery_method :smtp, @smtpsettings
+          delivery_method :smtp, smtpsettings
         end
       end
       
