@@ -66,7 +66,7 @@ module RubyCron
         raise "SMTP settings have to be passed in as a hash." unless @smtpsettings.instance_of?(Hash)
         raise "SMTP settings should include at least an address (:address)." unless @smtpsettings.keys.include?(:address)
         raise "SMTP settings should include at least a port number (:port)." unless @smtpsettings.keys.include?(:port)
-      else
+      elsif @smtpsettings.nil?
         raise "Cannot connect to local smtp server." unless smtp_connection?
       end
     end
