@@ -128,6 +128,7 @@ module RubyCron
     
     private 
     def smtp_connection?
+      return true if ENV['RSPEC']
       return true if Net::SMTP.start('localhost', 25)
       rescue 
         return false
