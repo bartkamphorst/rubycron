@@ -89,7 +89,7 @@ module RubyCron
     end
         
     def terminate(message)
-      $stderr.puts "## Cannot complete job. Reason: #{message}"
+      $stderr.puts "## Cannot complete job. Reason: #{message}" unless ENV['RSPEC']
       exit 1
     end
     
