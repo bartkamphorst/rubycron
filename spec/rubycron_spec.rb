@@ -1,37 +1,89 @@
-describe "RubyCron object" do
+describe "A RubyCronJob" do
   
   require 'RubyCron'
   
   context "initialized with a hash" do
     before(:each) do
-      @rcj = RubyCron::RubyCronJob.new( 
+      @rcjsettings = {
         :author     => 'John Doe',
         :name       => 'test',
         :mailto     => 'john@doe.com',
-        :mailon     => :all,
+        :mailon     => :none,
         :exiton     => :none,
         :smtpsettings => false,
-        :verbose    => false )
+        :verbose    => false
+      }
     end
+
+    context "containing all required settings" do
+      before(:each) do
+        @rcj = RubyCron::RubyCronJob.new(@rcjsettings)
+      end
+      
+      it "should have an author" do
+        @rcj.author.should == 'John Doe'
+      end
   
-    it "should have an author" do
-      @rcj.author.should == 'John Doe'
-    end
+      it "should have a name" do
+        @rcj.name.should == 'test'
+      end
   
-    it "should have a name" do
-      @rcj.name.should == 'test'
-    end
+      it "should have a mailto address" do
+        @rcj.mailto.should == 'john@doe.com'
+      end
   
-    it "should have a mailto address" do
-      @rcj.mailto.should == 'john@doe.com'
-    end
-  
-    it "should have a mailfrom address" do
-      @rcj.mailfrom.should be
+      it "should have a mailfrom address" do
+        @rcj.mailfrom.should be
+      end
+    
+      it "should have an execute method" do
+        @rcj.should respond_to(:execute)
+      end
+      
+      context "performing tasks" do
+        it "should succeed" do
+          @rcj.execute do
+            10.times { 22 + 20 }
+          end
+          @rcj.warnings.should be_empty
+          @rcj.errors.should be_empty
+        end
+        
+        it "should count warnings" do 
+          @rcj.execute do
+            5.times { warning "It's not serious, but see someone about it anyway." }
+          end
+          @rcj.warnings.should have(5).warnings
+          @rcj.errors.should have(0).errors
+        end
+        
+        it "should count errors" do
+          @rcj.execute do
+            5.times { error "Boom! No point in fixing that." }
+            42 / 0
+          end
+          @rcj.warnings.should have(0).warnings
+          @rcj.errors.should have(6).errors
+        end
+      end
+      
     end
     
-    it "should have an execute method" do
-      @rcj.should respond_to(:execute)
+    context "missing some required settings" do
+      it "should exit when no name is specified" do
+        @rcjsettings.delete(:name)
+        lambda{ RubyCron::RubyCronJob.new(@rcjsettings) }.should exit_with_code(1)
+      end
+    
+      it "should exit when no author is specified" do
+        @rcjsettings.delete(:author)
+        lambda{ RubyCron::RubyCronJob.new(@rcjsettings) }.should exit_with_code(1)
+      end
+    
+      it "should exit when no mailto address is specified" do
+        @rcjsettings.delete(:mailto)
+        lambda{ RubyCron::RubyCronJob.new(@rcjsettings) }.should exit_with_code(1)
+      end
     end
     
   end
