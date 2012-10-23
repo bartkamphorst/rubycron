@@ -8,7 +8,7 @@ describe "A RubyCronJob" do
         :author     => 'John Doe',
         :name       => 'test',
         :mailto     => 'john@doe.com',
-        :mailon     => :none,
+        :mailon     => :all,
         :exiton     => :none,
         :smtpsettings => false,
         :verbose    => false
@@ -41,6 +41,7 @@ describe "A RubyCronJob" do
       end
       
       context "performing tasks" do
+        
         it "should succeed" do
           @rcj.execute do
             10.times { 22 + 20 }
@@ -60,11 +61,43 @@ describe "A RubyCronJob" do
         it "should count errors" do
           @rcj.execute do
             5.times { error "Boom! No point in fixing that." }
-            42 / 0
+          end
+          @rcj.warnings.should have(0).warnings
+          @rcj.errors.should have(5).errors
+        end
+        
+        it "should terminate at uncaught exception but include the error in the count" do
+          @rcj.execute do
+            5.times { error "Boom! No point in fixing that." }
+            5.times { 42 / 0 }
           end
           @rcj.warnings.should have(0).warnings
           @rcj.errors.should have(6).errors
         end
+        
+      end
+      
+      context "reporting the results" do
+        include Mail::Matchers
+        
+        before(:each) do
+          Mail::TestMailer.deliveries.clear
+          @rcj.execute do
+            5.times { warning "Boom Boom" }
+            2.times { error "Bang Bang" }
+          end
+        end
+        
+        it "should produce a report" do
+          @rcj.report.should include "There were 5 warnings and 2 errors"
+          @rcj.report.should include "Boom Boom"
+        end
+        
+        it "should deliver the report by email" do
+          should have_sent_email.from('root@localhost').to('john@doe.com').
+          matching_subject(/test/).matching_body(/There were 5 warnings and 2 errors/) 
+        end
+        
       end
       
     end
