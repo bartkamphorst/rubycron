@@ -13,7 +13,7 @@ module RubyCron
   require 'erb'
   
   attr_accessor :name, :author, :mailto, :mailfrom, :mailsubject, :mailon, :exiton, :template, :smtpsettings, :logfile, :verbose
-  attr_reader   :warnings, :errors
+  attr_reader   :warnings, :errors, :report
   
     def initialize(args = nil)
       @warnings, @errors = [], []
@@ -50,7 +50,6 @@ module RubyCron
     end
     
     def check_sanity
-      
       raise "This job has no name."   unless @name 
       raise "This job has no author." unless @author
       raise "No To: header was set. " unless @mailto
@@ -58,7 +57,6 @@ module RubyCron
       check_smtp_settings
       set_defaults
       enable_file_logging if @logfile  
-  
     end
     
     def check_smtp_settings     
@@ -110,7 +108,7 @@ module RubyCron
         puts "Number of errors  : #{@errors.size}" 
       end
       unless self.mailon == :none || (@warnings.empty? && @errors.empty? && self.mailon != :all)
-        report
+        send_report
       end 
     end
    
@@ -137,12 +135,14 @@ module RubyCron
     # Report on the status of the cronjob through the use of
     # an erb template file, and mikel's excellent mail gem. 
     private
-    def report
+    def send_report
+      @report       = ERB.new(File.read(@template)).result(binding)      
       @mailsubject  = "Cron report for #{name}: #{@warnings.size} warnings & #{@errors.size} errors" unless @mailsubject
+      
       mailfrom      = @mailfrom
       mailto        = @mailto
       mailsubject   = @mailsubject
-      mailbody      = ERB.new(File.read(@template)).result(binding)
+      mailbody      = @report
     
       if @smtpsettings
         smtpsettings = @smtpsettings 
