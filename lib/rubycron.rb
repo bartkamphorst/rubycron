@@ -20,7 +20,7 @@ module RubyCron
       
       case args
         when NilClass then yield self if block_given?
-        when Proc     then instance_eval(args)
+        when Proc     then instance_eval(&args)
         when Hash     then 
           
           args = load_config(:file, args[:configfile]).merge(args) if args[:configfile]
@@ -45,8 +45,11 @@ module RubyCron
         io = open(source)
       end
       yml = YAML::load(io)
-      return yml if yml.is_a?(Hash)
-      return {}
+      if yml.is_a?(Hash)
+        return yml
+      else
+        terminate "Could not load the YAML configuration."
+      end
     end
     
     def check_sanity
@@ -82,7 +85,7 @@ module RubyCron
       $stdout.sync = true
       $stderr.reopen($stdout)
       rescue => e
-        $stdout = STDOUT
+        $stdout, $stderr = STDOUT, STDERR
         raise e
     end
         
@@ -126,7 +129,7 @@ module RubyCron
     
     private 
     def smtp_connection?
-      return true if ENV['RSPEC']
+      #return true if ENV['RSPEC']
       return true if Net::SMTP.start('localhost', 25)
       rescue 
         return false
