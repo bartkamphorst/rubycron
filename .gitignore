@@ -2,3 +2,4 @@ rubycron-*.gem
 rubycron.tmproj
 .rvmrc
 Gemfile.lock
+coverage
