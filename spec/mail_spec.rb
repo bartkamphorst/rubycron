@@ -1,7 +1,5 @@
 describe "A RubyCronJob" do
   
-  require 'RubyCron'
-  
   before(:each) do
     @smtpsettings = { 	
       :address              => "smtp.gmail.com",
