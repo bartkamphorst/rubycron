@@ -4,7 +4,7 @@ Gem::Specification.new do |s|
   s.name              = "rubycron"
   s.summary           = "Simplifies your Ruby cronjobs by automating the reporting process."
   s.description       = "Write clean cronjobs in Ruby, and get reporting for free!"
-  s.version           = "0.2.2"
+  s.version           = "0.2.3"
   s.author            = "Bart Kamphorst"
   s.email             = "rubycron@kamphorst.com"
   s.homepage          = "https://github.com/bartkamphorst/rubycron"
@@ -14,5 +14,8 @@ Gem::Specification.new do |s|
   s.extra_rdoc_files  = ["README.md"]
   s.executables       = ["rcjrunner.rb"]
   
-  s.add_dependency("mail")
+  s.add_dependency("mail", ">= 2.4.4")
+  s.add_development_dependency("simplecov")
+  s.add_development_dependency("rspec", "~> 2.0")
+  
 end
