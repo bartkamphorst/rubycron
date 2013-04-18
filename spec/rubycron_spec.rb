@@ -117,6 +117,14 @@ describe "A RubyCronJob" do
           $stdout, $stderr = STDOUT, STDERR 
         end
       end
+      
+      it "should reopen $stdout and $stderr in case of an exception" do
+        @rcjsettings[:logfile] = 42
+        lambda { RubyCron::RubyCronJob.new(@rcjsettings) }.should raise_error
+        $stdout.should == STDOUT
+        $stderr.should == STDERR
+      end
+      
     end
     
     context "with verbosity mode enabled" do
