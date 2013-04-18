@@ -17,6 +17,13 @@ This gem depends on [Mikel's wonderful mail gem](https://github.com/mikel/mail).
 
 By default, RubyCron assumes you have a local smtp server running on port 25 in order to send mail.
 
+### Tested on
+
+* ruby-1.8.7-p371 [ i686 ]
+* ruby-1.9.2-p320 [ x86_64 ]
+* ruby-1.9.3-p327 [ x86_64 ]
+* jruby-1.7.3 [ x86_64 ]
+
 ## Usage
 
 ### Configure the basics
