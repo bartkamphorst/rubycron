@@ -1,5 +1,8 @@
 require 'rubygems'
 
+$:.push File.expand_path("../lib", __FILE__)
+require "rubycron/version"
+
 Gem::Specification.new do |s|
   s.name              = "rubycron"
   s.summary           = "Simplifies your Ruby cronjobs by automating the reporting process."
