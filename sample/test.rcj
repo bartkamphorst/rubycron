@@ -3,6 +3,7 @@
 require 'rubygems'
 require 'RubyCron'
 include RubyCron
+require 'tmpdir'
 
 rcj = RubyCronJob.new(
   :author     => 'John Doe',
@@ -14,12 +15,14 @@ rcj = RubyCronJob.new(
   :verbose    => false )
 
 rcj.execute do 
-  unless File.directory?('/tmp')
-    warning "Something awry is going on with /tmp."
+  unless File.directory?(Dir.tmpdir)
+    warning "Something awry is going on with the tmp directory."
   end
   begin
-  File.open('/tmp/rubycrontest', 'w') do |f|
-    f.write("Test completed successfully.")
+  Dir.mktmpdir do |dir|
+    File.open(File.join(dir, 'rubycrontest'), 'w') do |f|
+      f.write("Test completed successfully.")
+    end
   end
   rescue => e
     error "Something went wrong trying to write to file: #{e.message}"
