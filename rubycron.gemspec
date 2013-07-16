@@ -16,7 +16,8 @@ Gem::Specification.new do |s|
   s.has_rdoc          = true
   s.extra_rdoc_files  = ["README.md"]
   s.executables       = ["rcjrunner.rb"]
-  
+  s.license	      = "Modified BSD"  
+
   s.add_dependency("mail", ">= 2.4.4")
   s.add_development_dependency("simplecov", "~> 0.7.1")
   s.add_development_dependency("rspec", "~> 2.0")
