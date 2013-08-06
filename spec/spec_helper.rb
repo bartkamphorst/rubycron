@@ -6,7 +6,8 @@ SimpleCov.start do
   add_filter "/support/"
 end
 
-require 'RubyCron'
+# require 'RubyCron'
+require 'rubycron'
 
 # Monkeypatch to bypass the check for a 
 # local smtp server. 
