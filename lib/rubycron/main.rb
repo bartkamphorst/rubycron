@@ -101,8 +101,10 @@ module RubyCron
       puts "\nStarting run of #{self.name} at #{@starttime}.\n----"  if self.verbose || self.logfile
       instance_eval(&block)
     rescue Exception => e
-      @errors << e.message
-      terminate(e.message) if exiton == (:error || :all)
+      trace = "#{e.message}\n" + e.backtrace.join("\n\t")
+      @errors << trace
+      $stderr.puts trace if self.verbose || self.logfile
+      terminate(trace) if exiton == (:error || :all)
     ensure
       @endtime = Time.now
       if self.verbose || self.logfile
