@@ -131,8 +131,8 @@ describe "A RubyCronJob" do
       it "should send output to stdout and stderr" do
         @rcjsettings[:verbose] = true
         $stdout.should_receive(:puts).exactly(4).times
-        $stderr.should_receive(:puts).exactly(2).times.with("Filesystem almost full.")
-        $stderr.should_receive(:puts).exactly(5).times.with("More than 42 processes.")
+        $stderr.should_receive(:puts).exactly(2).times.with("[WARN ] Filesystem almost full.")
+        $stderr.should_receive(:puts).exactly(5).times.with("[ERROR] More than 42 processes.")
         @rcj = RubyCron::RubyCronJob.new(@rcjsettings)
         @rcj.execute do
           2.times { warning "Filesystem almost full."}

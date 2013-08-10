@@ -103,7 +103,7 @@ module RubyCron
     rescue Exception => e
       trace = "#{e.message}\n" + e.backtrace.join("\n\t")
       @errors << trace
-      $stderr.puts trace if self.verbose || self.logfile
+      $stderr.puts "[ERROR] #{trace}" if self.verbose || self.logfile
       terminate(trace) if exiton == (:error || :all)
     ensure
       @endtime = Time.now
@@ -118,13 +118,13 @@ module RubyCron
     end
    
     def warning(message)
-     $stderr.puts message if self.verbose || self.logfile
-     raise "Configured to exit on warning." if exiton == (:warning || :all)
+     $stderr.puts "[WARN ] #{message}" if self.verbose || self.logfile
      @warnings << message
+     raise "Configured to exit on warning." if exiton == (:warning || :all)
     end
 
     def error(message)
-      $stderr.puts message if self.verbose || self.logfile
+      $stderr.puts "[ERROR] #{message}" if self.verbose || self.logfile
       raise "Configured to exit on error." if exiton == (:error || :all) 
       @errors << message
     end
