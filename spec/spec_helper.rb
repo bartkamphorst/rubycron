@@ -12,14 +12,9 @@ require 'rubycron'
 # local smtp server.
 class Net::SMTP
   def self.start(server, port)
-    true
+    raise Net::OpenTimeout if server.nil?
+    return true
   end
-end
-
-require 'mail'
-# Using Mail's TestMailer to test delivery
-Mail.defaults do
-  delivery_method :test 
 end
 
 # Require custom RSpec matchers

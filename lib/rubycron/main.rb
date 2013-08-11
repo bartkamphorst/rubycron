@@ -15,6 +15,9 @@ module RubyCron
   attr_accessor :name, :author, :mailto, :mailfrom, :mailsubject, :mailon, :exiton, :template, :smtpsettings, :logfile, :verbose
   attr_reader   :warnings, :errors, :report
   
+  DEFAULT_SERVER = 'localhost'
+  DEFAULT_PORT   = 25
+  
     def initialize(args = nil)
       @warnings, @errors = [], []
       
@@ -107,15 +110,17 @@ module RubyCron
       terminate(trace) if exiton == (:error || :all)
     ensure
       @endtime = Time.now
-      if self.verbose || self.logfile
-        puts "Run ended at #{@endtime}.\n----"  
-        puts "Number of warnings: #{@warnings.size}" 
-        puts "Number of errors  : #{@errors.size}" 
-      end
+      produce_summary if (self.verbose || self.logfile)
       unless self.mailon == :none || (@warnings.empty? && @errors.empty? && self.mailon != :all)
         send_report
       end 
     end
+   
+   def produce_summary
+     puts "Run ended at #{@endtime}.\n----"  
+     puts "Number of warnings: #{@warnings.size}" 
+     puts "Number of errors  : #{@errors.size}"
+   end
    
     def warning(message)
      $stderr.puts "[WARN ] #{message}" if self.verbose || self.logfile
@@ -131,7 +136,7 @@ module RubyCron
     
     private 
     def smtp_connection?
-      return true if Net::SMTP.start('localhost', 25)
+      return true if Net::SMTP.start(DEFAULT_SERVER, DEFAULT_PORT)
       rescue 
         return false
     end

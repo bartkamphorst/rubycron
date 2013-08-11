@@ -1,6 +1,12 @@
 describe "A RubyCronJob" do
   
   before(:each) do
+    
+    # Using Mail's TestMailer to test delivery
+    Mail.defaults do
+      delivery_method :test 
+    end
+    
     @smtpsettings = { 	
       :address              => "smtp.gmail.com",
       :port                 => 587,
@@ -44,6 +50,15 @@ describe "A RubyCronJob" do
       @rcj.smtpsettings[:user_name].should == "<username>"
       @rcj.smtpsettings[:password].should  == "<password>"
     end
+    
+    it "should pass mock smtp settings to the Mail gem and terminate" do
+      lambda { 
+        @rcj.execute do
+          2.times { warning "Filesystem almost full." } 
+        end 
+      }.should exit_with_code(1)
+    end
+    
   end
   
   context "with incomplete smtp settings" do
@@ -60,6 +75,15 @@ describe "A RubyCronJob" do
       lambda { RubyCron::RubyCronJob.new(@rcjsettings) }.should exit_with_code(1)
     end
       
+  end
+  
+  context "without explicit smtp settings" do
+    
+    it "should exit with code 1 if the default server is not localhost" do
+      RubyCron::RubyCronJob.send(:remove_const, :DEFAULT_SERVER)
+      lambda { RubyCron::RubyCronJob.new(@rcjsettings) }.should exit_with_code(1)
+      RubyCron::RubyCronJob.send(:const_set, :DEFAULT_SERVER, 'localhost')
+    end
   end
   
   after(:each) do
