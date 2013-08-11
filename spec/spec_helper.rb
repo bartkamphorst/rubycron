@@ -6,14 +6,13 @@ SimpleCov.start do
   add_filter "/support/"
 end
 
-# require 'RubyCron'
 require 'rubycron'
 
 # Monkeypatch to bypass the check for a 
-# local smtp server. 
-module RubyCron
-  class RubyCronJob
-    def smtp_connection? ; true ; end
+# local smtp server.
+class Net::SMTP
+  def self.start(server, port)
+    true
   end
 end
 
