@@ -12,7 +12,7 @@ Gem::Specification.new do |s|
   s.email             = "rubycron@kamphorst.com"
   s.homepage          = "https://github.com/bartkamphorst/rubycron"
   s.require_paths     = ["lib"]
-  s.files             = ["README.md", "Gemfile", "lib/rubycron.rb", "lib/rubycron/main.rb", "lib/rubycron/report.erb", "lib/rubycron/version.rb", "sample/test.rcj", "bin/rcjrunner.rb"]
+  s.files             = ["README.md", "Gemfile", "lib/rubycron.rb", "lib/rubycron/errors.rb", "lib/rubycron/main.rb", "lib/rubycron/report.erb", "lib/rubycron/version.rb", "sample/test.rcj", "bin/rcjrunner.rb"]
   s.has_rdoc          = true
   s.extra_rdoc_files  = ["README.md"]
   s.executables       = ["rcjrunner.rb"]

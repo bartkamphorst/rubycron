@@ -103,6 +103,8 @@ module RubyCron
       @starttime = Time.now
       puts "\nStarting run of #{self.name} at #{@starttime}.\n----"  if self.verbose || self.logfile
       instance_eval(&block)
+    rescue ExitOnWarning, ExitOnError => e
+      terminate(e.message)
     rescue Exception => e
       trace = "#{e.message}\n" + e.backtrace.join("\n\t")
       @errors << trace
@@ -125,13 +127,13 @@ module RubyCron
     def warning(message)
      $stderr.puts "[WARN ] #{message}" if self.verbose || self.logfile
      @warnings << message
-     raise "Configured to exit on warning." if exiton == (:warning || :all)
+     raise ExitOnWarning.new("Configured to exit on warning.") if exiton == (:warning || :all)
     end
 
     def error(message)
       $stderr.puts "[ERROR] #{message}" if self.verbose || self.logfile
-      raise "Configured to exit on error." if exiton == (:error || :all) 
       @errors << message
+      raise ExitOnError.new("Configured to exit on error.") if exiton == (:error || :all) 
     end
     
     private 
