@@ -101,9 +101,9 @@ describe "A RubyCronJob" do
     context "with logging enabled" do
       it "should redirect stdout and stderr to file" do
         @rcjsettings[:logfile] = '/tmp/rspec-test'
-        mock_stdout = mock('standard out')
+        mock_stdout = double('standard out')
         mock_stdout.stub(:write) { |args| STDOUT.write(args) }
-        mock_stderr = mock('standard error')
+        mock_stderr = double('standard error')
         mock_stderr.stub(:write) { |args| STDOUT.write(args) }
         begin
           $stdout, $stderr = mock_stdout, mock_stderr
@@ -156,6 +156,35 @@ describe "A RubyCronJob" do
         @rcjsettings.delete(:mailto)
         lambda{ RubyCron::RubyCronJob.new(@rcjsettings) }.should exit_with_code(1)
       end
+    end
+    
+    context "exiting at the first sign of trouble" do
+      
+      it "should exit at the first warning if so configured" do
+        @rcjsettings[:exiton] = :warning
+        @rcj = RubyCron::RubyCronJob.new(@rcjsettings)
+        lambda {
+          @rcj.execute do
+            3.times { warning "Filesystem almost full."}
+          end
+        }.should exit_with_code(1)
+        @rcj.warnings.should have(1).warnings
+        @rcj.errors.should have(0).errors
+      end
+      
+      it "should exit at the first error if so configured" do
+        @rcjsettings[:exiton] = :error
+        @rcj = RubyCron::RubyCronJob.new(@rcjsettings)
+        lambda {
+          @rcj.execute do
+            2.times { warning "Filesystem almost full."}
+            5.times { error "More than 42 processes." }
+          end
+        }.should exit_with_code(1)
+        @rcj.warnings.should have(2).warnings
+        @rcj.errors.should have(1).errors
+      end
+      
     end
     
   end
