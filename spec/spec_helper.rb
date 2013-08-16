@@ -6,6 +6,11 @@ SimpleCov.start do
   add_filter "/support/"
 end
 
+if ENV['TRAVIS']
+  require 'coveralls'
+  Coveralls.wear!
+end
+
 require 'rubycron'
 
 # Monkeypatch to bypass the check for a 
