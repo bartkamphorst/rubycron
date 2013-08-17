@@ -5,6 +5,7 @@
 By letting RubyCron deal with warnings, errors, and sending reports, you can focus on writing clean and effective cronjobs in Ruby.
 
 [![Build Status](https://travis-ci.org/bartkamphorst/rubycron.png?branch=master)](https://travis-ci.org/bartkamphorst/rubycron)
+[![Coverage Status](https://coveralls.io/repos/bartkamphorst/rubycron/badge.png?branch=master)](https://coveralls.io/r/bartkamphorst/rubycron?branch=master)
 [![Gem Version](https://badge.fury.io/rb/rubycron.png)](http://badge.fury.io/rb/rubycron)
 
 ## Author
