@@ -12,7 +12,7 @@ module RubyCron
   require 'mail'
   require 'erb'
   
-  attr_accessor :name, :author, :mailto, :mailfrom, :mailsubject, :mailon, :exiton, :template, :smtpsettings, :logfile, :verbose
+  attr_accessor :name, :author, :mailto, :mailfrom, :mailsubject, :mailon, :exiton, :template, :smtpsettings, :debug, :logfile, :verbose
   attr_reader   :warnings, :errors, :report
   
   DEFAULT_SERVER = 'localhost'
@@ -62,6 +62,7 @@ module RubyCron
       
       check_smtp_settings
       set_defaults
+      enable_debug_mode if @debug
       enable_file_logging if @logfile  
     end
     
@@ -81,6 +82,11 @@ module RubyCron
       @template       ||= File.join(File.dirname(__FILE__), '/report.erb')
       @mailon = :all unless self.mailon && [:none, :warning, :error, :all].include?(self.mailon)
       @exiton = :all unless self.exiton && [:none, :warning, :error, :all].include?(self.exiton)
+    end
+    
+    def enable_debug_mode
+      @mailon = :none
+      @verbose = true
     end
     
     def enable_file_logging

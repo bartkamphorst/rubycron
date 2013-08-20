@@ -98,6 +98,22 @@ describe "A RubyCronJob" do
       end     
     end
     
+    context "with debug mode enabled" do
+      
+      before(:each) do
+        @rcjsettings[:debug] = true
+        @rcj = RubyCron::RubyCronJob.new(@rcjsettings)
+      end
+      
+      it "should disable sending mail" do
+        @rcj.mailon.should == :none
+      end
+      
+      it "should enable verbose output" do
+        @rcj.verbose.should be_true
+      end
+    end
+    
     context "with logging enabled" do
       it "should redirect stdout and stderr to file" do
         @rcjsettings[:logfile] = '/tmp/rspec-test'
