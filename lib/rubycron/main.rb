@@ -106,6 +106,7 @@ module RubyCron
     # Execute a given block of code (the cronjob), rescue encountered errors, 
     # and send a report about it if necessary.
     def execute(&block)
+      puts "[INFO ] Running in debug mode. Will not send mail." if self.debug
       @starttime = Time.now
       puts "\nStarting run of #{self.name} at #{@starttime}.\n----"  if self.verbose || self.logfile
       instance_eval(&block)
