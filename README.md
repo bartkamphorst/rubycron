@@ -25,7 +25,8 @@ By default, RubyCron assumes you have a local smtp server running on port 25 in 
 
 * ruby-1.8.7-p371 [ i686 ]
 * ruby-1.9.2-p320 [ x86_64 ]
-* ruby-1.9.3-p327 [ x86_64 ]
+* ruby-1.9.3-p448 [ x86_64 ]
+* ruby-2.0.0-p247 [ x86_64 ]
 * jruby-1.7.4 [ x86_64 ]
 
 ## Usage
@@ -85,7 +86,7 @@ Sorting through hundreds of cron mails per day that report successful runs may b
 ```ruby
 	:mailon	=> :error
 ```
-RubyCron will now only report when errors occurred during the run. Other options are :none, :warning and :all (default).
+RubyCron will now only report when errors occurred during the run. Other options are *:none*, *:warning* and **:all** (default).
 
 ### All emails originate from root@localhost. Can I change that?
 
@@ -119,7 +120,7 @@ No problem. You can configure this behavior with
 ```ruby
 	:exiton	=> :all
 ```
-Valid values are :none, :warning, :error, :all.
+Valid values are **:none** (default), *:warning*, *:error*, *:all*.
 
 ### Is there a way to manipulate the content of the email reports?
 
@@ -153,7 +154,7 @@ This is roughly the equivalent of setting :verbose to true and :mailon to :none.
 
 Yes. Set a file path in RubyCronJob's logfile variable, and all output will be redirected to file:
 ```ruby
-	:logfile => '/tmp/rcjlogfile'
+	:logfile => '/tmp/rcjlogfile.log'
 ```
 Note that you will still receive email reports when you enable file logging. 
 
