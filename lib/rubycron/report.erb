@@ -2,6 +2,12 @@ This is your RubyCron mailer reporting on <%= self.name %>.
 
 There were <%= @warnings.size %> warnings and <%= @errors.size %> errors during the last run, which started at 
 <%= @starttime %> and ended at <%= @endtime %>.
+<% unless @messages.empty? %>
+<%= "These were the informational messages:" %>
+<% @messages.each_with_index do |message, index| %> 
+<%=	index + 1 %>: <%= message %>
+<%=	"============================================================" %>
+<% end %> <% end %>
 <% unless @warnings.empty? %>
 <%= "These were the warnings:" %>
 <% @warnings.each_with_index do |warning, index| %> 

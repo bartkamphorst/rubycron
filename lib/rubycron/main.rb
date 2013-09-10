@@ -13,13 +13,13 @@ module RubyCron
   require 'erb'
   
   attr_accessor :name, :author, :mailto, :mailfrom, :mailsubject, :mailon, :exiton, :template, :smtpsettings, :debug, :logfile, :verbose
-  attr_reader   :warnings, :errors, :report
+  attr_reader   :messages, :warnings, :errors, :report
   
   DEFAULT_SERVER = 'localhost'
   DEFAULT_PORT   = 25
   
     def initialize(args = nil)
-      @warnings, @errors = [], []
+      @messages, @warnings, @errors = [], [], []
       
       case args
         when NilClass then yield self if block_given?
@@ -125,12 +125,19 @@ module RubyCron
       end 
     end
    
-   def produce_summary
-     puts "Run ended at #{@endtime}.\n----"  
-     puts "Number of warnings: #{@warnings.size}" 
-     puts "Number of errors  : #{@errors.size}"
-   end
+    def produce_summary
+      puts "Run ended at #{@endtime}.\n----"  
+      puts "Number of messages: #{@messages.size}"
+      puts "Number of warnings: #{@warnings.size}" 
+      puts "Number of errors  : #{@errors.size}"
+    end
    
+    def message(message)
+      $stderr.puts "[INFO ] #{message}" if self.verbose || self.logfile
+      @messages << message
+    end
+    alias_method :info, :message
+    
     def warning(message)
      $stderr.puts "[WARN ] #{message}" if self.verbose || self.logfile
      @warnings << message
