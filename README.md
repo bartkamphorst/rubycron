@@ -41,9 +41,10 @@ Open a new file, require and include RubyCron, and then initialize a new RubyCro
 ```
 ### Write your cronjob
 
-Call RubyCronJob's execute method, and define your cronjob within the do-end block.
+Call RubyCronJob's execute method, and define your cronjob within the do-end block. Use the *info*, *warning* and *error* methods to create your reports.
 ```ruby
 	rcj.execute do 
+	  info "Starting run on #{`uname -n`}"
 	  unless File.directory?('/tmp')
 	    warning "Something awry is going on with /tmp."
 	  end
