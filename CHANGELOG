@@ -1,4 +1,13 @@
 #########################
+# What's new in v. 0.3? #
+#########################
+
+* A :debug option that, when true, enables verbose output and disables sending mail.
+* Improved exiton handling. 
+* A stacktrace for errors that were not handled by the RubyCronJob itself, but were caught by RubyCron instead. Allows for easier debugging.
+* An info method that adds [INFO ] statements to the report (for when you want output that isn't classified as a warning or an error).
+
+#########################
 # What's new in v. 0.2? #
 #########################
 
