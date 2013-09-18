@@ -1,0 +1,54 @@
+# Example RubyCronJob script for checking free disk space
+
+rcj = RubyCronJob.new(  :author => 'John Doe',
+                        :name   => 'Free Disk Space Check',
+                        :mailto => 'john@doe.com',
+                        :debug	=> true,
+                        :exiton => :error )
+
+
+rcj.execute do
+
+  # Returns Array of Hashes (one for each row of output)
+  def parse_df_output(input)
+    output = []
+    rows = input.split("\n")
+    keys = rows[0].split(' ').map{|key| key.downcase.to_sym}
+    rows.each_with_index do |row, index|
+      next if index == 0
+      info = {}
+      values = row.split(' ')
+      values.each_with_index do |value, index|
+        info[keys[index]] = value
+      end
+      output << info
+    end
+    output
+  end
+
+  info "Checking free disk space on #{`uname -n`}"
+
+  df_output = parse_df_output(%x{df -lh})
+  error "Command exited with non-zero exit code #{$?}" if $? != 0
+
+  df_output.each do |data|
+    next unless data[:filesystem].match(/\/dev\/disk./)
+    capacity = data[:capacity].gsub('%', '').to_i
+    warning "Capacity on #{data[:filesystem]} is reaching its max: #{capacity}%" if capacity > 90
+  end
+
+end
+
+# Example output:
+# [INFO ] Running in debug mode. Will not send mail.
+# 
+# Starting run of Free Disk Space Check at 2013-09-18 12:50:27 +0200.
+# ----
+# [INFO ] Checking free disk space on <hostname>
+# [WARN ] Capacity on /dev/diskX is reaching its max: 95%
+# [WARN ] Capacity on /dev/diskY is reaching its max: 98%
+# Run ended at 2013-09-18 12:50:27 +0200.
+# ----
+# Number of messages: 1
+# Number of warnings: 2
+# Number of errors  : 0
