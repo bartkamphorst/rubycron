@@ -179,7 +179,7 @@ Note that in the latter case the values of the directives specified within the R
 
 ## License
 
-Copyright (c) 2011 - 2013, Bart Kamphorst
+Copyright (c) 2011 - 2014, Bart Kamphorst
 
 (Modified BSD License)
 

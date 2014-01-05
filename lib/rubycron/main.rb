@@ -1,4 +1,4 @@
-# Copyright (c) Bart Kamphorst <rubycron@kamphorst.com>, 2011 - 2013.
+# Copyright (c) Bart Kamphorst <rubycron@kamphorst.com>, 2011 - 2014.
 # Licensed under the modified BSD License. All rights reserved.
 
 module RubyCron
