@@ -146,7 +146,6 @@ describe "A RubyCronJob" do
     context "with verbosity mode enabled" do
       it "should send output to stdout and stderr" do
         @rcjsettings[:verbose] = true
-        $stdout.should_receive(:puts).exactly(5).times
         $stderr.should_receive(:puts).exactly(1).times.with("[INFO ] Starting RubyCronJob...")
         $stderr.should_receive(:puts).exactly(2).times.with("[WARN ] Filesystem almost full.")
         $stderr.should_receive(:puts).exactly(5).times.with("[ERROR] More than 42 processes.")
