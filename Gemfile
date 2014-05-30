@@ -2,7 +2,7 @@ source 'https://rubygems.org'
 
 gem "mail", ">= 2.4.4"
 
-gem 'coveralls', require: false
+gem 'coveralls', :require => false
 
 group :test do
   gem "rspec", "~> 2.0"
