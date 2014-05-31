@@ -23,11 +23,12 @@ By default, RubyCron assumes you have a local smtp server running on port 25 in 
 
 ### Tested on
 
-* ruby-1.8.7-p371 [ i686 ]
+* ruby-1.8.7-p374 [ i686 ]
 * ruby-1.9.2-p320 [ x86_64 ]
 * ruby-1.9.3-p448 [ x86_64 ]
-* ruby-2.0.0-p247 [ x86_64 ]
-* jruby-1.7.4 [ x86_64 ]
+* ruby-2.0.0-p451 [ x86_64 ]
+* ruby-2.1.1
+* jruby-1.7.11 [ x86_64 ]
 
 ## Usage
 
