@@ -16,7 +16,7 @@ rcj = RubyCronJob.new(
 
 rcj.execute do 
   unless File.directory?(Dir.tmpdir)
-    warning "Something awry is going on with the tmp directory."
+    warning "Something seems wrong with the tmp directory."
   end
   begin
   Dir.mktmpdir do |dir|

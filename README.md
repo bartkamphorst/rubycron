@@ -46,8 +46,8 @@ Call RubyCronJob's execute method, and define your cronjob within the do-end blo
 ```ruby
 	rcj.execute do 
 	  info "Starting run on #{`uname -n`}"
-	  unless File.directory?('/tmp')
-	    warning "Something awry is going on with /tmp."
+	  unless File.directory?(Dir.tmpdir)
+		warning "Something seems wrong with the tmp directory."
 	  end
 	  begin
 	  File.open('/tmp/rubycrontest', 'w') do |f|
