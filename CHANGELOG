@@ -1,4 +1,10 @@
 #########################
+# What's new in v. 1.0? #
+#########################
+
+Nothing, really. It was just time for the 1.0 release. The only difference with v.0.3 is that RubyCron now depends on mail ">= 2.6.3".
+
+#########################
 # What's new in v. 0.3? #
 #########################
 
