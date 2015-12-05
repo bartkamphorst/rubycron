@@ -4,6 +4,7 @@ gem "mail", ">= 2.6.3"
 
 gem "mime-types", "~> 1.23", :platforms => :ruby_18
 gem "rest-client", "~> 1.6.7", :platforms => :ruby_18
+gem "tins", "~> 1.3.2", :platforms => :ruby_19
 
 gem 'coveralls', :require => false
 
