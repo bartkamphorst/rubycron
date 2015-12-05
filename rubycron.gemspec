@@ -18,8 +18,8 @@ Gem::Specification.new do |s|
   s.executables       = ["rcjrunner.rb"]
   s.license	      = "Modified BSD"  
 
-  s.add_dependency("mail", ">= 2.4.4")
+  s.add_dependency("mail", ">= 2.6")
   s.add_development_dependency("simplecov", "~> 0.7.1")
-  s.add_development_dependency("rspec", "~> 2.0")
+  s.add_development_dependency("rspec", "~> 3.4")
   
 end
