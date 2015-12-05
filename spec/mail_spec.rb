@@ -33,55 +33,55 @@ describe "A RubyCronJob" do
       @rcj = RubyCron::RubyCronJob.new(@rcjsettings)
     end
   
-    it "should load a ERB template" do
-      @rcj.template.should be
-      File.basename(@rcj.template).should == "report.erb"
+    it "loads an ERB template" do
+      expect(@rcj.template).to_not be_nil
+      expect(::File.basename(@rcj.template)).to eq "report.erb"
       @rcj.template = "my_template.erb"
-      File.basename(@rcj.template).should == "my_template.erb"
+      expect(::File.basename(@rcj.template)).to eq "my_template.erb"
     end
     
-    it "should have a Hash of smtp settings" do
-      @rcj.smtpsettings.should be_a Hash
+    it "has a Hash of smtp settings" do
+      expect(@rcj.smtpsettings).to be_a Hash
     end
   
-    it "should have proper smtp settings" do
-      @rcj.smtpsettings[:address].should   == "smtp.gmail.com"
-      @rcj.smtpsettings[:port].should      == 587
-      @rcj.smtpsettings[:user_name].should == "<username>"
-      @rcj.smtpsettings[:password].should  == "<password>"
+    it "has proper smtp settings" do
+      expect(@rcj.smtpsettings[:address]).to eq "smtp.gmail.com"
+      expect(@rcj.smtpsettings[:port]).to eq 587
+      expect(@rcj.smtpsettings[:user_name]).to eq "<username>"
+      expect(@rcj.smtpsettings[:password]).to eq "<password>"
     end
     
-    it "should pass mock smtp settings to the Mail gem and terminate" do
-      lambda { 
+    it "passes mock smtp settings to the Mail gem and terminates" do
+      expect(lambda{ 
         @rcj.execute do
           2.times { warning "Filesystem almost full." } 
         end 
-      }.should exit_with_code(1)
+      }).to exit_with_code(1)
     end
     
   end
   
   context "with incomplete smtp settings" do
     
-    it "should exit with code 1 if no address is specified" do
+    it "exits with code 1 if no address is specified" do
       @smtpsettings.delete(:address)
       @rcjsettings[:smtpsettings] = @smtpsettings
-      lambda { RubyCron::RubyCronJob.new(@rcjsettings) }.should exit_with_code(1)
+      expect(lambda{ RubyCron::RubyCronJob.new(@rcjsettings) }).to exit_with_code(1)
     end
     
-    it "should exit with code 1 if no port is specified" do
+    it "exits with code 1 if no port is specified" do
       @smtpsettings.delete(:port)
       @rcjsettings[:smtpsettings] = @smtpsettings
-      lambda { RubyCron::RubyCronJob.new(@rcjsettings) }.should exit_with_code(1)
+      expect(lambda{ RubyCron::RubyCronJob.new(@rcjsettings) }).to exit_with_code(1)
     end
       
   end
   
   context "without explicit smtp settings" do
     
-    it "should exit with code 1 if the default server is not localhost" do
+    it "exits with code 1 if the default server is not localhost" do
       RubyCron::RubyCronJob.send(:remove_const, :DEFAULT_SERVER)
-      lambda { RubyCron::RubyCronJob.new(@rcjsettings) }.should exit_with_code(1)
+      expect(lambda{ RubyCron::RubyCronJob.new(@rcjsettings) }).to exit_with_code(1)
       RubyCron::RubyCronJob.send(:const_set, :DEFAULT_SERVER, 'localhost')
     end
   end

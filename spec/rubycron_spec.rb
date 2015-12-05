@@ -18,59 +18,59 @@ describe "A RubyCronJob" do
         @rcj = RubyCron::RubyCronJob.new(@rcjsettings)
       end
       
-      it "should have an author" do
-        @rcj.author.should == 'John Doe'
+      it "has an author" do
+        expect(@rcj.author).to eq 'John Doe'
       end
   
-      it "should have a name" do
-        @rcj.name.should == 'test'
+      it "has a name" do
+        expect(@rcj.name).to eq 'test'
       end
   
-      it "should have a mailto address" do
-        @rcj.mailto.should == 'john@doe.com'
+      it "has a mailto address" do
+        expect(@rcj.mailto).to eq 'john@doe.com'
       end
   
-      it "should have a mailfrom address" do
-        @rcj.mailfrom.should be
+      it "has a mailfrom address" do
+        expect(@rcj.mailfrom).to eq 'root@localhost'
       end
     
-      it "should have an execute method" do
-        @rcj.should respond_to(:execute)
+      it "has an execute method" do
+        expect(@rcj).to respond_to(:execute)
       end
       
       context "performing tasks" do
         
-        it "should succeed" do
+        it "succeeds" do
           @rcj.execute do
             10.times { 22 + 20 }
           end
-          @rcj.warnings.should be_empty
-          @rcj.errors.should be_empty
+          expect(@rcj.warnings).to be_empty
+          expect(@rcj.errors).to be_empty
         end
         
-        it "should count warnings" do 
+        it "counts warnings" do 
           @rcj.execute do
             5.times { warning "It's not serious, but see someone about it anyway." }
           end
-          @rcj.warnings.should have(5).warnings
-          @rcj.errors.should have(0).errors
+          expect(@rcj.warnings).to have(5).warnings
+          expect(@rcj.errors).to have(0).errors
         end
         
-        it "should count errors" do
+        it "counts errors" do
           @rcj.execute do
             5.times { error "Boom! No point in fixing that." }
           end
-          @rcj.warnings.should have(0).warnings
-          @rcj.errors.should have(5).errors
+          expect(@rcj.warnings).to have(0).warnings
+          expect(@rcj.errors).to have(5).errors
         end
         
-        it "should terminate at uncaught exception but include the error in the count" do
+        it "terminates on uncaught exception but includes the error in the count" do
           @rcj.execute do
             5.times { error "Boom! No point in fixing that." }
             5.times { 42 / 0 }
           end
-          @rcj.warnings.should have(0).warnings
-          @rcj.errors.should have(6).errors
+          expect(@rcj.warnings).to have(0).warnings
+          expect(@rcj.errors).to have(6).errors
         end 
       end
       
@@ -85,13 +85,13 @@ describe "A RubyCronJob" do
           end
         end
         
-        it "should produce a report" do
-          @rcj.report.should include "There were 5 warnings and 2 errors"
-          @rcj.report.should include "Boom Boom"
+        it "produces a report" do
+          expect(@rcj.report).to include "There were 5 warnings and 2 errors"
+          expect(@rcj.report).to include "Boom Boom"
         end
         
-        it "should deliver the report by email" do
-          should have_sent_email.from('root@localhost').to('john@doe.com').
+        it "delivers the report by email" do
+          expect have_sent_email.from('root@localhost').to('john@doe.com').
           matching_subject(/test/).matching_body(/There were 5 warnings and 2 errors/) 
         end
         
@@ -105,28 +105,28 @@ describe "A RubyCronJob" do
         @rcj = RubyCron::RubyCronJob.new(@rcjsettings)
       end
       
-      it "should disable sending mail" do
-        @rcj.mailon.should == :none
+      it "disables sending mail" do
+        expect(@rcj.mailon).to eq :none
       end
       
-      it "should enable verbose output" do
-        @rcj.verbose.should be_true
+      it "enables verbose output" do
+        expect(@rcj.verbose).to be true
       end
     end
     
     context "with logging enabled" do
-      it "should redirect stdout and stderr to file" do
+      it "redirects stdout and stderr to file" do
         @rcjsettings[:logfile] = '/tmp/rspec-test'
         mock_stdout = double('standard out')
-        mock_stdout.stub(:write) { |args| STDOUT.write(args) }
+        allow(mock_stdout).to receive(:write) { |args| STDOUT.write(args) }
         mock_stderr = double('standard error')
-        mock_stderr.stub(:write) { |args| STDOUT.write(args) }
+        allow(mock_stderr).to receive(:write) { |args| STDOUT.write(args) }
         begin
           $stdout, $stderr = mock_stdout, mock_stderr
 
-          $stdout.should_receive(:reopen).with('/tmp/rspec-test', 'a')
-          $stdout.should_receive(:sync=).with(true).once
-          $stderr.should_receive(:reopen).with($stdout)
+          expect($stdout).to receive(:reopen).with('/tmp/rspec-test', 'a')
+          expect($stdout).to receive(:sync=).with(true).once
+          expect($stderr).to receive(:reopen).with($stdout)
 
           @rcj = RubyCron::RubyCronJob.new(@rcjsettings)
         ensure
@@ -134,21 +134,21 @@ describe "A RubyCronJob" do
         end
       end
       
-      it "should reopen $stdout and $stderr in case of an exception" do
+      it "reopens $stdout and $stderr in case of an exception" do
         @rcjsettings[:logfile] = 42
-        lambda { RubyCron::RubyCronJob.new(@rcjsettings) }.should raise_error
-        $stdout.should == STDOUT
-        $stderr.should == STDERR
+        expect(lambda { RubyCron::RubyCronJob.new(@rcjsettings) }).to raise_error SystemExit
+        expect($stdout).to eq STDOUT
+        expect($stderr).to eq STDERR
       end
       
     end
     
     context "with verbosity mode enabled" do
-      it "should send output to stdout and stderr" do
+      it "sends output to stdout and stderr" do
         @rcjsettings[:verbose] = true
-        $stderr.should_receive(:puts).exactly(1).times.with("[INFO ] Starting RubyCronJob...")
-        $stderr.should_receive(:puts).exactly(2).times.with("[WARN ] Filesystem almost full.")
-        $stderr.should_receive(:puts).exactly(5).times.with("[ERROR] More than 42 processes.")
+        expect($stderr).to receive(:puts).exactly(1).times.with("[INFO ] Starting RubyCronJob...")
+        expect($stderr).to receive(:puts).exactly(2).times.with("[WARN ] Filesystem almost full.")
+        expect($stderr).to receive(:puts).exactly(5).times.with("[ERROR] More than 42 processes.")
         @rcj = RubyCron::RubyCronJob.new(@rcjsettings)
         @rcj.execute do
           1.times { info "Starting RubyCronJob..." }
@@ -159,47 +159,47 @@ describe "A RubyCronJob" do
     end
     
     context "missing some required settings" do
-      it "should exit when no name is specified" do
+      it "exits when no name is specified" do
         @rcjsettings.delete(:name)
-        lambda{ RubyCron::RubyCronJob.new(@rcjsettings) }.should exit_with_code(1)
+        expect(lambda{ RubyCron::RubyCronJob.new(@rcjsettings) }).to exit_with_code(1)
       end
     
-      it "should exit when no author is specified" do
+      it "exits when no author is specified" do
         @rcjsettings.delete(:author)
-        lambda{ RubyCron::RubyCronJob.new(@rcjsettings) }.should exit_with_code(1)
+        expect(lambda{ RubyCron::RubyCronJob.new(@rcjsettings) }).to exit_with_code(1)
       end
     
-      it "should exit when no mailto address is specified" do
+      it "exits when no mailto address is specified" do
         @rcjsettings.delete(:mailto)
-        lambda{ RubyCron::RubyCronJob.new(@rcjsettings) }.should exit_with_code(1)
+        expect(lambda{ RubyCron::RubyCronJob.new(@rcjsettings) }).to exit_with_code(1)
       end
     end
     
     context "exiting at the first sign of trouble" do
       
-      it "should exit at the first warning if so configured" do
+      it "exits at the first warning if so configured" do
         @rcjsettings[:exiton] = :warning
         @rcj = RubyCron::RubyCronJob.new(@rcjsettings)
-        lambda {
+        expect(lambda{
           @rcj.execute do
             3.times { warning "Filesystem almost full."}
           end
-        }.should exit_with_code(1)
-        @rcj.warnings.should have(1).warnings
-        @rcj.errors.should have(0).errors
+        }).to exit_with_code(1)
+        expect(@rcj.warnings).to have(1).warnings
+        expect(@rcj.errors).to have(0).errors
       end
       
-      it "should exit at the first error if so configured" do
+      it "exits at the first error if so configured" do
         @rcjsettings[:exiton] = :error
         @rcj = RubyCron::RubyCronJob.new(@rcjsettings)
-        lambda {
+        expect(lambda{
           @rcj.execute do
             2.times { warning "Filesystem almost full."}
             5.times { error "More than 42 processes." }
           end
-        }.should exit_with_code(1)
-        @rcj.warnings.should have(2).warnings
-        @rcj.errors.should have(1).errors
+        }).to exit_with_code(1)
+        expect(@rcj.warnings).to have(2).warnings
+        expect(@rcj.errors).to have(1).errors
       end
       
     end
@@ -219,16 +219,16 @@ describe "A RubyCronJob" do
       end
     end
     
-    it "should have an author" do
-      @rcj.author.should  == 'Jane Doe'
+    it "has an author" do
+      expect(@rcj.author).to eq 'Jane Doe'
     end
     
-    it "should have a name" do
-      @rcj.name.should    == 'testing blocks'
+    it "has a name" do
+      expect(@rcj.name).to eq 'testing blocks'
     end
     
-    it "should have a mailto address" do
-      @rcj.mailto.should  == 'jane@doe.com'
+    it "has a mailto address" do
+      expect(@rcj.mailto).to eq 'jane@doe.com'
     end
   end
   
@@ -245,10 +245,10 @@ describe "A RubyCronJob" do
       })
     end
       
-    it "should have an author, a name, and a mailto address" do
-      @rcj.author.should  == 'Janet Doe'
-      @rcj.name.should    == 'testing procs'
-      @rcj.mailto.should  == 'janet@doe.com'
+    it "has an author, a name, and a mailto address" do
+      expect(@rcj.author).to eq 'Janet Doe'
+      expect(@rcj.name).to eq 'testing procs'
+      expect(@rcj.mailto).to eq 'janet@doe.com'
     end
       
   end
@@ -258,10 +258,10 @@ describe "A RubyCronJob" do
       @rcj = RubyCron::RubyCronJob.new(:configfile => "spec/support/yaml/example.yml")
     end
     
-    it "should have an author, a name, and a mailto address" do
-      @rcj.author.should  == 'Joey Doe'
-      @rcj.name.should    == 'config_file_test'
-      @rcj.mailto.should  == 'joey@doe.com'
+    it "has an author, a name, and a mailto address" do
+      expect(@rcj.author).to eq 'Joey Doe'
+      expect(@rcj.name).to eq 'config_file_test'
+      expect(@rcj.mailto).to eq 'joey@doe.com'
     end
   end
     
@@ -269,10 +269,10 @@ describe "A RubyCronJob" do
     before(:each) do
       @rcj = RubyCron::RubyCronJob.new(:configurl => "spec/support/yaml/example.yml")
     end
-    it "should have an author, a name, and a mailto address" do
-      @rcj.author.should  == 'Joey Doe'
-      @rcj.name.should    == 'config_file_test'
-      @rcj.mailto.should  == 'joey@doe.com'
+    it "has an author, a name, and a mailto address" do
+      expect(@rcj.author).to eq 'Joey Doe'
+      expect(@rcj.name).to eq 'config_file_test'
+      expect(@rcj.mailto).to eq 'joey@doe.com'
     end
   end
     
@@ -283,23 +283,23 @@ describe "A RubyCronJob" do
                                       :mailto => "jet@doe.com")
     end
     
-    it "should have an author, a name, and a mailto address" do
-      @rcj.author.should  == 'Jet Doe'
-      @rcj.name.should    == 'config_file_test'
-      @rcj.mailto.should  == 'jet@doe.com'
+    it "has an author, a name, and a mailto address" do
+      expect(@rcj.author).to eq 'Jet Doe'
+      expect(@rcj.name).to eq 'config_file_test'
+      expect(@rcj.mailto).to eq 'jet@doe.com'
     end
   end
   
   context "initialized incorrectly" do
     context "with a String" do
-      it "should terminate with code 1" do
-        lambda { @rcj = RubyCron::RubyCronJob.new("One new rcj please.")}.should exit_with_code(1)
+      it "terminates with code 1" do
+        expect(lambda{ @rcj = RubyCron::RubyCronJob.new("One new rcj please.")}).to exit_with_code(1)
       end
     end
     
     context "with incorrect YAML" do
-      it "should terminate with code 1" do
-        lambda { @rcj = RubyCron::RubyCronJob.new(:configurl => "spec/support/yaml/empty_array.yml")}.should exit_with_code(1)
+      it "terminates with code 1" do
+        expect(lambda{ @rcj = RubyCron::RubyCronJob.new(:configurl => "spec/support/yaml/empty_array.yml")}).to exit_with_code(1)
       end
     end
   end

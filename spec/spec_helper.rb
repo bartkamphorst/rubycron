@@ -12,6 +12,8 @@ if ENV['TRAVIS']
 end
 
 require 'rubycron'
+require 'rspec/collection_matchers'
+
 
 # Monkeypatch to bypass the check for a 
 # local smtp server.
