@@ -4,7 +4,7 @@
 
 By letting RubyCron deal with warnings, errors, and sending reports, you can focus on writing clean and effective cronjobs in Ruby.
 
-[![Build Status](https://travis-ci.org/bartkamphorst/rubycron.png?branch=master)](https://travis-ci.org/bartkamphorst/rubycron)
+[![Ruby Build](https://github.com/bartkamphorst/rubycron/actions/workflows/ruby.yml/badge.svg)](https://github.com/bartkamphorst/rubycron/actions/workflows/ruby.yml)
 [![Coverage Status](https://coveralls.io/repos/bartkamphorst/rubycron/badge.png?branch=master)](https://coveralls.io/r/bartkamphorst/rubycron?branch=master)
 [![Gem Version](https://badge.fury.io/rb/rubycron.png)](http://badge.fury.io/rb/rubycron)
 
@@ -28,6 +28,7 @@ By default, RubyCron assumes you have a local smtp server running on port 25 in 
 * ruby-1.9.3-p448 [ x86_64 ]
 * ruby-2.0.0-p451 [ x86_64 ]
 * ruby-2.1.1
+* ruby-2.7.1
 * jruby-1.7.11 [ x86_64 ]
 
 ## Usage
